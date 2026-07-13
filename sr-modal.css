@@ -4,6 +4,15 @@
    Style variants: Red & deep purple / Blue Rounded / Spectrum / Teal / Green
    ========================================================================== */
 
+/* The saved page's mobile mega-menu (hidden off-canvas via a translateX on
+   a position:static submenu) extends the document's scrollable width even
+   though it's visibly hidden, which lets the whole page pan horizontally.
+   Clip it here rather than touching the vendor menu-drawer CSS. */
+html,
+body {
+  overflow-x: hidden;
+}
+
 .sr-modal {
   position: fixed;
   left: 50%;
@@ -12,10 +21,13 @@
   max-width: 430px;
   transform: translate(-50%, 100%) translateZ(0);
   -webkit-transform: translate(-50%, 100%) translateZ(0);
-  transition: transform 0.35s ease;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
   z-index: 999999;
   font-family: Roboto, Arial, Helvetica, sans-serif;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+  /* No shadow until revealed — otherwise the blurred shadow bleeds above
+     the element's translated (off-screen) top edge and reads as a stray
+     translucent bar pinned to the bottom of the viewport. */
+  box-shadow: none;
   /* Forces this fixed element onto its own GPU compositing layer so iOS/
      mobile Safari keeps it correctly docked to the viewport and repaints it
      immediately during momentum scrolling, instead of letting it lag or
@@ -28,13 +40,14 @@
 .sr-modal.is-revealed {
   transform: translate(-50%, 0) translateZ(0);
   -webkit-transform: translate(-50%, 0) translateZ(0);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
 }
 
 .sr-modal__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  position: relative;
   width: 100%;
   border: none;
   cursor: pointer;
@@ -49,19 +62,21 @@
   font-weight: 700;
   font-size: 16px;
   color: #ffffff;
-  text-align: left;
+  text-align: center;
 }
 
 .sr-modal__chevron {
-  flex: 0 0 auto;
+  position: absolute;
+  right: 16px;
+  top: 50%;
   width: 16px;
   height: 8px;
   transition: transform 0.3s ease;
-  transform: rotate(0deg);
+  transform: translateY(-50%) rotate(0deg);
 }
 
 .sr-modal.is-collapsed .sr-modal__chevron {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .sr-modal__chevron svg {

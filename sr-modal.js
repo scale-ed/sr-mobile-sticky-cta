@@ -6,14 +6,19 @@
        once).
      - After that first entry, the modal is permanently "revealed" (never
        fully hides again) and toggles between two states based on the #1
-       Product section's relationship to the viewport:
-         - EXPANDED  — whenever the #1 Product section is entirely outside
-                       the viewport (above or below).
-         - COLLAPSED — whenever any part of the #1 Product section is
-                       inside the viewport. The top edge/header of the
-                       modal remains visible in this state (per Figma).
-     - Tapping the header still manually toggles collapsed/expanded; the
-       next scroll event re-syncs it to the automatic rule above.
+       Product's "Check LiverMD® Stock!" CTA (#sr-product1-cta) relative to
+       the viewport:
+         - EXPANDED  — whenever that CTA is above the vertical center of
+                       the viewport (i.e. the reader has scrolled past the
+                       #1 listing).
+         - COLLAPSED — otherwise. The top edge/header of the modal remains
+                       visible in this state (per Figma).
+     - Tapping the header still manually toggles collapsed/expanded. If a
+       manual tap collapses it while it would otherwise be auto-expanded,
+       that collapse sticks through continued scrolling in that direction
+       — it only resumes following the automatic rule once the reader
+       scrolls back past the #1 listing (CTA no longer above center),
+       at which point the manual and automatic states agree again.
    ========================================================================== */
 
 (function () {
@@ -24,10 +29,19 @@
     if (!modal) return;
 
     var sentinel = document.getElementById("no_one_product_anchor");
+    var product1Cta = document.getElementById("sr-product1-cta");
     var header = document.getElementById("sr-modal-header");
     var ctaButtons = modal.querySelectorAll("[data-sr-action]");
 
     var hasFirstEntered = false;
+    var suppressAutoExpand = false;
+
+    function isProduct1CtaAboveCenter() {
+      if (!product1Cta) return false;
+      var rect = product1Cta.getBoundingClientRect();
+      var viewportCenter = (window.innerHeight || document.documentElement.clientHeight) / 2;
+      return rect.top + rect.height / 2 < viewportCenter;
+    }
 
     function evaluateState() {
       if (!sentinel) return;
@@ -45,10 +59,21 @@
       }
 
       modal.classList.add("is-revealed");
-      // Collapsed whenever any part of the #1 Product section is in the
-      // viewport; expanded whenever it's entirely out of view.
-      modal.classList.toggle("is-collapsed", intersectsViewport);
-      header && header.setAttribute("aria-expanded", String(!intersectsViewport));
+
+      var shouldCollapse = !isProduct1CtaAboveCenter();
+
+      if (suppressAutoExpand) {
+        if (shouldCollapse) {
+          // Automatic rule has caught back up to the manual override —
+          // resume normal auto-tracking from here.
+          suppressAutoExpand = false;
+        } else {
+          shouldCollapse = true;
+        }
+      }
+
+      modal.classList.toggle("is-collapsed", shouldCollapse);
+      header && header.setAttribute("aria-expanded", String(!shouldCollapse));
     }
 
     function onScrollOrResize() {
@@ -64,8 +89,9 @@
 
     if (header) {
       header.addEventListener("click", function () {
-        var collapsed = modal.classList.toggle("is-collapsed");
-        header.setAttribute("aria-expanded", String(!collapsed));
+        var collapsedNow = modal.classList.toggle("is-collapsed");
+        header.setAttribute("aria-expanded", String(!collapsedNow));
+        suppressAutoExpand = collapsedNow;
       });
     }
 
