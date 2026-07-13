@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SR Mobile Scroll Trigger CTA — Test Gateway</title>
+<style>
+  :root {
+    --ink: #1f2430;
+    --muted: #5c6470;
+    --line: #e3e6ec;
+    --bg: #f6f7fb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0 0 28px;
+    max-width: 640px;
+    line-height: 1.5;
+  }
+  .brief {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #33394a;
+  }
+  .brief h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .brief ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    box-shadow: 0 8px 24px rgba(20, 24, 40, 0.08);
+    transform: translateY(-2px);
+  }
+  .swatch {
+    height: 40px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .swatch--red { background: linear-gradient(135deg, #eb5757, #24458b); }
+  .swatch--blue { background: #5787eb; }
+  .swatch--spectrum {
+    background: conic-gradient(from 90deg, #ff7f06, #ff2d5a, #b511dc, #5f6ae9, #08c2f6, #46dfba, #ffb733, #ff7f06);
+  }
+  .swatch--teal { background: #04c9f7; }
+  .swatch--green { background: #59b377; }
+  .card h3 {
+    margin: 0 0 4px;
+    font-size: 17px;
+  }
+  .card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer {
+    margin-top: 48px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  code {
+    background: #eef0f5;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>SR Mobile Scroll Trigger CTA</h1>
+    <p class="subtitle">
+      Five design options for the new mobile sticky scroll-trigger CTA on the LiverMD Smarter Reviews page.
+      Each link below opens a full working copy of the live page with one option wired up — scroll behavior, tap-to-collapse, and all.
+    </p>
+
+    <div class="brief">
+      <h2>How to test</h2>
+      <ul>
+        <li>The modal doesn't appear at all until you scroll far enough that the <strong>#1 LiverMD</strong> listing first enters the viewport.</li>
+        <li>Once it's appeared, it stays on screen for the rest of the page: <strong>expanded</strong> (full card) whenever the #1 listing is completely out of view, and <strong>collapsed</strong> to just the header bar whenever any part of the #1 listing is visible on screen &mdash; including scrolling back up above it into the main article content.</li>
+        <li>Tap the colored header bar to manually collapse/expand it &mdash; scrolling again will re-sync it to the rule above.</li>
+        <li><strong>Take Me to #1 Pick</strong> / <strong>Jump to Product Review</strong> scroll you to the #1 listing on the same page. <strong>Shop Now</strong> (Teal option) opens the live affiliate link in a new tab.</li>
+      </ul>
+    </div>
+
+    <div class="grid">
+      <a class="card" href="option-red-deep-purple.html" target="_blank" rel="noopener">
+        <div class="swatch swatch--red"></div>
+        <h3>Red &amp; Deep Purple</h3>
+        <p>Red header, navy card, green CTA</p>
+      </a>
+      <a class="card" href="option-blue-rounded.html" target="_blank" rel="noopener">
+        <div class="swatch swatch--blue"></div>
+        <h3>Blue Rounded</h3>
+        <p>Blue header, white card, red CTA</p>
+      </a>
+      <a class="card" href="option-spectrum.html" target="_blank" rel="noopener">
+        <div class="swatch swatch--spectrum"></div>
+        <h3>Spectrum</h3>
+        <p>Rainbow gradient header, pink CTA</p>
+      </a>
+      <a class="card" href="option-teal.html" target="_blank" rel="noopener">
+        <div class="swatch swatch--teal"></div>
+        <h3>Teal</h3>
+        <p>Cyan header, dual CTA (Shop Now / Jump to Review)</p>
+      </a>
+      <a class="card" href="option-green.html" target="_blank" rel="noopener">
+        <div class="swatch swatch--green"></div>
+        <h3>Green</h3>
+        <p>Green header, white card, green CTA</p>
+      </a>
+    </div>
+
+    <footer>
+      Hive ticket <code>343642</code> &middot; Mobile Sticky CTA for SR pages &middot; built from the approved Figma designs.
+    </footer>
+  </div>
+</body>
+</html>

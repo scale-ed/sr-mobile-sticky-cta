@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<!-- saved from url=(0160)https://app.thefrontrowhealth.com/api/widgets/storage_setter?visitor_token=30cb7659-3b95-478c-b8a7-8c597298467e&visit_token=a4f46f37-de1f-43dd-8dbd-de75860dc6c6 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <script>
+    (function() {
+      'use strict';
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const visitorTokenFromUrl = urlParams.get('visitor_token');
+      const visitTokenFromUrl = urlParams.get('visit_token');
+
+      if (visitorTokenFromUrl && visitTokenFromUrl) {
+        localStorage.setItem('frontrow_visitor_token', visitorTokenFromUrl);
+        sessionStorage.setItem('frontrow_visit_token', visitTokenFromUrl);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <!-- This iframe is invisible - no content needed -->
+
+
+</body></html>

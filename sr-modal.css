@@ -1,0 +1,325 @@
+/* ==========================================================================
+   SR Mobile Scroll Trigger Modal — shared styles for all 5 test variants
+   Source: Figma "Componants" page, "Scroll Trigger Overlay" component,
+   Style variants: Red & deep purple / Blue Rounded / Spectrum / Teal / Green
+   ========================================================================== */
+
+.sr-modal {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: 430px;
+  transform: translate(-50%, 100%) translateZ(0);
+  -webkit-transform: translate(-50%, 100%) translateZ(0);
+  transition: transform 0.35s ease;
+  z-index: 999999;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+  /* Forces this fixed element onto its own GPU compositing layer so iOS/
+     mobile Safari keeps it correctly docked to the viewport and repaints it
+     immediately during momentum scrolling, instead of letting it lag or
+     drift with the page until the scroll gesture fully settles. */
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.sr-modal.is-revealed {
+  transform: translate(-50%, 0) translateZ(0);
+  -webkit-transform: translate(-50%, 0) translateZ(0);
+}
+
+.sr-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  padding: 12px 16px 10px;
+  font-family: inherit;
+  border-top-left-radius: var(--sr-radius, 20px);
+  border-top-right-radius: var(--sr-radius, 20px);
+  background: var(--sr-header-bg, #5787eb);
+}
+
+.sr-modal__header-text {
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+  text-align: left;
+}
+
+.sr-modal__chevron {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 8px;
+  transition: transform 0.3s ease;
+  transform: rotate(0deg);
+}
+
+.sr-modal.is-collapsed .sr-modal__chevron {
+  transform: rotate(180deg);
+}
+
+.sr-modal__chevron svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sr-modal__body {
+  overflow: hidden;
+  max-height: 260px;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+  background: var(--sr-body-bg, #ffffff);
+  padding: 14px 16px 16px;
+}
+
+.sr-modal.is-collapsed .sr-modal__body {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ---- standard (star-rating) layout: Red, Blue, Spectrum, Green ---- */
+
+.sr-modal__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 28px;
+}
+
+.sr-modal__product-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  width: 100px;
+}
+
+.sr-modal__product-img {
+  width: 100px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.sr-modal__stars {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.sr-modal__stars img {
+  width: 17px;
+  height: 17px;
+}
+
+.sr-modal__info-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: center;
+}
+
+.sr-modal__eyebrow {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--sr-eyebrow-color, #4d80ed);
+}
+
+.sr-modal__name {
+  margin: 0;
+}
+
+.sr-modal__brand {
+  margin: 0;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.15;
+  color: var(--sr-name-color, #321e41);
+}
+
+.sr-modal__by {
+  margin: 0;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.15;
+  color: var(--sr-name-color, #321e41);
+}
+
+.sr-modal__cta {
+  border: none;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  color: #ffffff;
+  background: var(--sr-cta-bg, #eb5757);
+  white-space: nowrap;
+}
+
+/* ---- Teal layout: logo + left-aligned name + two CTAs, no stars ---- */
+
+.sr-modal--teal .sr-modal__row {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sr-modal--teal .sr-modal__info-col {
+  align-items: flex-start;
+  text-align: left;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.sr-modal--teal .sr-modal__eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.sr-modal--teal .sr-modal__eyebrow-row img {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.sr-modal--teal .sr-modal__eyebrow {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.sr-modal--teal .sr-modal__brand,
+.sr-modal--teal .sr-modal__by {
+  text-align: left;
+}
+
+.sr-modal--teal .sr-modal__product-col {
+  width: 100px;
+  flex: 0 0 auto;
+}
+
+.sr-modal--teal .sr-modal__cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.sr-modal--teal .sr-modal__cta {
+  background: #ff8a02;
+  padding: 8px 18px;
+}
+
+.sr-modal--teal .sr-modal__jump-link {
+  font-size: 16px;
+  color: #447fe5;
+  text-decoration: underline;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* ---- Variant color tokens ---- */
+
+.sr-modal--red {
+  --sr-radius: 10px;
+  --sr-header-bg: #eb5757;
+  --sr-body-bg: #24458b;
+  --sr-eyebrow-color: #ffffff;
+  --sr-name-color: #ffffff;
+  --sr-cta-bg: #59b377;
+}
+
+.sr-modal--blue {
+  --sr-radius: 26px;
+  --sr-header-bg: #5787eb;
+  --sr-body-bg: #ffffff;
+  --sr-eyebrow-color: #4d80ed;
+  --sr-name-color: #321e41;
+  --sr-cta-bg: #eb5757;
+}
+
+.sr-modal--spectrum {
+  --sr-radius: 26px;
+  --sr-body-bg: #ffffff;
+  --sr-eyebrow-color: #4d80ed;
+  --sr-name-color: #321e41;
+  --sr-cta-bg: #ff3365;
+}
+
+.sr-modal--spectrum .sr-modal__header {
+  background: conic-gradient(
+    from 90deg,
+    rgb(255, 127, 6) -3.6303%,
+    rgb(255, 107, 27) 0.8908%,
+    rgb(255, 86, 48) 5.4119%,
+    rgb(255, 66, 69) 9.933%,
+    rgb(255, 45, 90) 14.454%,
+    rgb(237, 38, 123) 19.838%,
+    rgb(218, 31, 155) 25.223%,
+    rgb(181, 17, 220) 35.991%,
+    rgb(159, 39, 223) 38.671%,
+    rgb(138, 61, 227) 41.351%,
+    rgb(95, 106, 233) 46.711%,
+    rgb(51, 150, 240) 52.07%,
+    rgb(30, 172, 243) 54.75%,
+    rgb(8, 194, 246) 57.43%,
+    rgb(24, 201, 231) 62.631%,
+    rgb(39, 209, 216) 67.831%,
+    rgb(70, 223, 186) 78.232%,
+    rgb(116, 199, 141) 82.766%,
+    rgb(163, 175, 96) 87.301%,
+    rgb(209, 151, 51) 91.835%,
+    rgb(232, 139, 29) 94.102%,
+    rgb(255, 127, 6) 96.37%
+  );
+}
+
+.sr-modal--teal {
+  --sr-radius: 26px;
+  --sr-header-bg: #04c9f7;
+  --sr-body-bg: #ffffff;
+  --sr-eyebrow-color: #4d80ed;
+  --sr-name-color: #321e41;
+}
+
+.sr-modal--green {
+  --sr-radius: 26px;
+  --sr-header-bg: #59b377;
+  --sr-body-bg: #ffffff;
+  --sr-eyebrow-color: #4d80ed;
+  --sr-name-color: #321e41;
+  --sr-cta-bg: #59b377;
+}
+
+@media (max-width: 430px) {
+  .sr-modal {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,509 @@
+// Generate UUID helper
+if (!window.generateUUID) {
+  window.generateUUID = function() {
+    if (crypto && crypto.randomUUID) {
+      return crypto.randomUUID();
+    } else if (crypto && crypto.getRandomValues) {
+      const array = new Uint8Array(16);
+      crypto.getRandomValues(array);
+      array[6] = (array[6] & 0x0f) | 0x40;
+      array[8] = (array[8] & 0x3f) | 0x80;
+      return Array.from(array, (b, i) => {
+        const hex = b.toString(16).padStart(2, '0');
+        return [4, 6, 8, 10].includes(i) ? '-' + hex : hex;
+      }).join('');
+    } else {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  };
+}
+
+// Generate or retrieve visitor token (persists across sessions)
+if (!window.getOrCreateVisitorToken) {
+  window.getOrCreateVisitorToken = function() {
+    let token = localStorage.getItem('frontrow_visitor_token');
+    if (!token) {
+      token = window.generateUUID();
+      localStorage.setItem('frontrow_visitor_token', token);
+    }
+    return token;
+  };
+}
+
+// Generate or retrieve visit token (persists for current session only)
+if (!window.getOrCreateVisitToken) {
+  window.getOrCreateVisitToken = function() {
+    let token = sessionStorage.getItem('frontrow_visit_token');
+    if (!token) {
+      token = window.generateUUID();
+      sessionStorage.setItem('frontrow_visit_token', token);
+    }
+    return token;
+  };
+}
+
+if (typeof window.VISITOR_TOKEN === 'undefined') {
+  window.VISITOR_TOKEN = window.getOrCreateVisitorToken();
+}
+if (typeof window.VISIT_TOKEN === 'undefined') {
+  window.VISIT_TOKEN = window.getOrCreateVisitToken();
+}
+
+(function() {
+  'use strict';
+
+  const visitorToken = window.getOrCreateVisitorToken();
+  const visitToken = window.getOrCreateVisitToken();
+
+  // Create invisible storage setter iframe for cross-domain token sharing
+  (function createStorageIframe() {
+    try {
+      if (!window.__FR_STORAGE_IFRAME_CREATED__) {
+        window.__FR_STORAGE_IFRAME_CREATED__ = true;
+
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.style.position = 'absolute';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        iframe.setAttribute('aria-hidden', 'true');
+
+        const storageUrl = 'https://app.thefrontrowhealth.com/api/widgets/storage_setter' +
+                          '?visitor_token=' + encodeURIComponent(visitorToken) +
+                          '&visit_token=' + encodeURIComponent(visitToken);
+
+        iframe.src = storageUrl;
+
+        if (document.body) {
+          document.body.appendChild(iframe);
+        } else {
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.appendChild(iframe);
+          });
+        }
+      }
+    } catch (e) {
+      console.debug('Storage iframe creation failed:', e);
+    }
+  })();
+})();
+
+
+(function() {
+  if (window.__FR_PAGE_VIEW_FIRED__) return;
+  window.__FR_PAGE_VIEW_FIRED__ = true;
+
+  try {
+    var visitorToken = window.getOrCreateVisitorToken && window.getOrCreateVisitorToken();
+    var visitToken = window.getOrCreateVisitToken && window.getOrCreateVisitToken();
+    var url = 'https://app.thefrontrowhealth.com/api/widgets/storage_setter' +
+      '?visitor_token=' + encodeURIComponent(visitorToken || '') +
+      '&visit_token=' + encodeURIComponent(visitToken || '') +
+      '&parent_url=' + encodeURIComponent(window.location.href) +
+      '&healthBrandId=1118' +
+      '&healthBrandProductId=3845';
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url);
+    } else {
+      fetch(url, {method: 'POST', keepalive: true}).catch(function() {});
+    }
+  } catch (e) {
+    // Swallow errors — page_view tracking must never break widget rendering.
+  }
+})();
+
+if (!window.__FR_DEBUG_MODE_LOADED__) {
+  window.__FR_DEBUG_MODE_LOADED__ = true;
+
+  var DEBUG_MODE = false;
+
+  var debugLog = (...args) => {
+    if (DEBUG_MODE) {
+      console.log('[FRONTROW]', ...args);
+    }
+  };
+
+  function frDebounce(func, timeout){
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+} else if (false && !DEBUG_MODE) {
+  DEBUG_MODE = true;
+}
+
+
+function fmdTrackEvent8614(eventName, properties = {}) {
+  debugLog('TRACKING_WIDGET_EVENT:', eventName, properties);
+  frTrackToApi(eventName, {
+    healthBrandProductId: 3845,
+    bundleId: null,
+    presentationType: 'brand',
+    widget_version: '8',
+    url: window?.location?.href || '',
+    is_sticky: false,
+    ...properties
+  });
+
+}
+
+
+var div = document.querySelector("div#frontrow-portal")
+
+if(!div) {
+  div = document.createElement("div")
+  div.id = "frontrow-portal"
+}
+
+var frontrowModalUrl = "https://app.thefrontrowhealth.com/api/widgets/modal?presentation_type=brand&amp;product_id=3845"
+
+function setupIframe(className, url, zIndex = 99999997) {
+  if (document.querySelector("." + className) === null) {
+    const frModalIframe = document.createElement("iframe")
+    frModalIframe.classList.add("iframe")
+    frModalIframe.classList.add("frontrow")
+    frModalIframe.classList.add(className)
+    frModalIframe.src = url.replaceAll("&amp;", "&")
+    frModalIframe.style.borderStyle = "none"
+    frModalIframe.style.zIndex = zIndex
+    div.appendChild(frModalIframe)
+  }
+}
+
+
+setupIframe("iframe-modal-frontrow-3845", frontrowModalUrl, 99999998)
+
+var providerProfileUrl = "https://app.thefrontrowhealth.com/api/widgets/v1/provider_profiles?widget_id=8614"
+setupIframe("iframe-provider-profile-modal", providerProfileUrl, 99999999)
+
+if (!div.parentNode) {
+  document.body.appendChild(div)
+}
+
+function openFrModal(presentation_type, utm_content="badge", widget_version=null) {
+  debugLog('OPENING_FRONTROW_MODAL');
+  const frModalIframe = document.querySelector("iframe.iframe-modal-frontrow-3845");
+  frModalIframe.contentWindow.postMessage({ name: "UPDATE_UTM_PARAMS", utm_content: utm_content }, "*");
+  frModalIframe.style.display = "block";
+  frModalIframe.contentWindow.focus();
+  fmdTrackEvent8614('cc_click_learn_more', { presentationType: presentation_type, widget_version });
+}
+
+function setupAndOpenProviderModal(data, presentation_type="quant", utm_content="badge", widget_version=null) {
+  const ifm = document.querySelector('.iframe-provider-profile-modal');
+  ifm.contentWindow.postMessage({ name: "UPDATE_UTM_PARAMS", utm_content: utm_content }, "*");
+  ifm.contentWindow.postMessage({name: "OPEN", data}, "*");
+  ifm.style.display = "block";
+  ifm.contentWindow.focus();
+  fmdTrackEvent8614('view_provider_details', { presentationType: presentation_type, widget_version, provider_profile_id: data?.provider });
+}
+
+function closeOriginModal(origin) {
+  const iframes = [...document.querySelectorAll("iframe")]
+  const frModalIframe = iframes.find(i => i.contentWindow === origin)
+
+  popFocus()
+  frModalIframe.style.display = "none"
+}
+
+function closeAllModals() {
+  const allModals = [...document.querySelectorAll(".iframe.frontrow")]
+
+  resetFocus()
+
+  allModals.forEach(m => {
+    m.style.display = "none"
+  })
+}
+
+if(typeof FOCUS_STACK == 'undefined') {
+  FOCUS_STACK = [];
+}
+
+function focusLastOrigin(origin) {
+  if(!origin) return;
+
+  const iframes = [...document.querySelectorAll("iframe")]
+  const frModalIframe = iframes.find(i => i.contentWindow === origin)
+
+  frModalIframe?.contentWindow?.focus?.()
+}
+
+function resetFocus() {
+  focusLastOrigin(FOCUS_STACK[0]);
+  FOCUS_STACK = []
+}
+
+function popFocus() {
+  focusLastOrigin(FOCUS_STACK.pop())
+}
+
+function setupStyles(styles) {
+  var frStyleSheet = document.createElement("style");
+  frStyleSheet.textContent = styles;
+  document.head.appendChild(frStyleSheet);
+}
+
+if (!window.__FR_TRACK_TO_API_LOADED__) {
+  window.__FR_TRACK_TO_API_LOADED__ = true;
+
+  window.frTrackToApi = function(eventName, properties = {}) {
+    try {
+      const visitorToken = localStorage.getItem('frontrow_visitor_token');
+      const visitToken = sessionStorage.getItem('frontrow_visit_token');
+
+      fetch("https://app.thefrontrowhealth.com/api/tracking", {
+        method: "POST",
+        body: JSON.stringify({
+          event: eventName,
+          visitor_token: visitorToken,
+          visit_token: visitToken,
+          published: window.Shopify?.theme?.role === 'main' || null,
+          opts: properties
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+      }).catch(() => {
+        debugLog('API_TRACKING_ERROR:', eventName);
+      });
+      debugLog('API_EVENT_TRACKED:', eventName, properties);
+    } catch (error) {
+      debugLog('API_TRACKING_ERROR:', eventName, properties, error);
+    }
+  };
+}
+
+  if (!window.__FR_TRACKING_LOADED__) {
+    window.__FR_TRACKING_LOADED__ = true;
+    setTimeout((() => {
+      const FR_ADD_TO_CART_KEYWORDS = [
+        'add to cart',
+        'add to bag',
+        'buy now',
+        'buy it now',
+        'order now',
+        'more payment options',
+        'buy once',
+        'subscribe',
+        'shop now',
+        'one time purchase',
+        'one-time purchase'
+      ];
+
+      const FR_ADD_TO_CART_TAGS = ['a', 'button'];
+
+      function frNormalizeText(text) {
+        return text.trim().toLowerCase();
+      }
+
+      function frIsAddToCartButton(element) {
+        const tag = element.tagName && element.tagName.toLowerCase();
+        const text = frNormalizeText(element.innerText || element.value || '');
+
+        debugLog("CHECKING_ELEMENT:", { tag, text });
+
+        return (FR_ADD_TO_CART_KEYWORDS.some(keyword => text.includes(keyword)) && FR_ADD_TO_CART_TAGS.includes(tag)) || tag === 'shop-pay-wallet-button';
+      }
+
+      function frTrackConversionEvent(element, eventName="add_to_cart") {
+        const endpoint = "https://app.thefrontrowhealth.com/api/tracking";
+        const payload = {
+          event: eventName,
+          visitor_token: window.VISITOR_TOKEN || localStorage.getItem('frontrow_visitor_token'),
+          visit_token: window.VISIT_TOKEN || sessionStorage.getItem('frontrow_visit_token'),
+          opts: {
+            healthBrandProductId: 3845,
+            bundleId: null,
+            badges: badgeTypes(),
+            cta_identifier: frNormalizeText(element.innerText || element.value || '')
+          }
+        };
+
+        try {
+          // Track to internal API
+          debugLog("PREPARING_BEACON", {beacon: !!navigator.sendBeacon});
+          navigator.sendBeacon(endpoint, JSON.stringify(payload));
+          debugLog("ADD_TO_CART_EVENT_SENT");
+
+          // Track to Mixpanel
+          if (typeof fmdTrackEvent8614 === 'function') {
+            fmdTrackEvent8614('add_to_cart', {
+              badges: badgeTypes
+            });
+            debugLog("ADD_TO_CART_MIXPANEL_TRACKED");
+          }
+        } catch (error) {
+          debugLog("ADD_TO_CART_TRACKING_ERROR:", error);
+        }
+      }
+
+      function badgeTypes() {
+        return [...new Set([...document.querySelectorAll('iframe[src^="https://app.thefrontrowhealth.com/api/widgets"]')]
+          .filter((item) => {
+            const src = item.src;
+            return src &&
+              window.getComputedStyle(item).display !== 'none' &&
+              !src.includes('modal') &&
+              !src.includes('provider_profiles');
+          })
+          .map((item) => {
+            const src = item.src;
+            const presentationType = src.match(/[?&]presentation_type=([^&]+)/)?.[1];
+            const widgetId = src.match(/\/api\/widgets\/(\d+)/)?.[1];
+            return presentationType || widgetId || 'widget';
+          }))];
+      }
+
+      // Event listener for detecting keyword clicks
+      document.addEventListener('click', frDebounce(function (event) {
+        let el = event.target;
+
+        for (let i = 0; i < 3 && el; i++) {
+          if (frIsAddToCartButton(el)) {
+            debugLog("ADD_TO_CART_DETECTED", el);
+            frTrackConversionEvent(el);
+            break;
+          }
+          el = el.parentElement;
+        }
+      }, { capture: true }), 300);
+
+      // Event listeners for configured add to cart selectors
+
+      // Event listeners for configured checkout selectors
+    }), 300);
+  }
+
+
+var frBrandStyles = `
+  #iframe-frontrow-brand {
+    display: none;
+  }
+
+  #frontrow-sticky-regular {
+    height: 62px !important;
+    width: 100%;
+    display: none;
+  }
+
+  .iframe.frontrow {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 99999997;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  
+
+`
+
+setupStyles(frBrandStyles);
+
+function resizeHeight(value, origin) {
+  debugLog('RESIZING_HEIGHT:', { value, origin });
+  const iframes = [...document.querySelectorAll("iframe.iframe-frontrow")]
+  const badgeIframe = iframes.find(i => i.contentWindow === origin)
+
+  if (badgeIframe) {
+    badgeIframe.style.height = value + "px";
+    badgeIframe.style.display = "block";
+    debugLog('BADGE_IFRAME_RESIZED:', { id: badgeIframe.id, newHeight: value });
+  }
+
+}
+
+try {
+  window.addEventListener("message", ev => {
+
+    if((ev.data?.name?.includes && ev.data?.name?.includes("OPEN")) || (ev.data?.includes && ev.data?.includes("OPEN"))) FOCUS_STACK.push(ev.source);
+
+    if(ev.data === "OPEN_MODAL") return openFrModal("brand", "badge", "8");
+    if(ev.data === "CLOSE_ALL_MODALS") return closeAllModals();
+    if(ev.data.includes && ev.data.includes("CLOSE")) return closeOriginModal(ev.source);
+    if(ev.data?.name === "RESIZE_HEIGHT") return resizeHeight(ev.data?.value, ev.source);
+    if(ev.data?.name === "OPEN_PROVIDER_MODAL") return setupAndOpenProviderModal(ev.data.data, "brand", "badge", "8");
+    if(ev.data?.name === "BRAND_REQUEST_READY_STATUS") {
+      debugLog('SENDING_READY_STATUS');
+      ev.source.postMessage({ name: "PARENT_READY" }, "*");
+      return;
+    }
+    if(ev.data?.name === "TRACK_FMD_EVENT" && ev.data?.widgetId === 8614) {
+      fmdTrackEvent8614(ev.data.eventName, ev.data.properties);
+      return;
+    }
+  });
+
+  function sendReadyToBrandIframes() {
+    const iframe = document.querySelector("#iframe-frontrow-brand") || document.querySelector("#iframe-frontrow-homepage");
+    if (iframe) {
+      try {
+        iframe.contentWindow.postMessage({ name: "PARENT_READY" }, "*");
+      } catch (e) {
+        debugLog('ERROR_SENDING_READY_SIGNAL:', e);
+      }
+    }
+  }
+
+  sendReadyToBrandIframes();
+  debugLog('PARENT_READY_STATE_SET');
+} catch (error) {
+  debugLog('ERROR_SETTING_UP_MESSAGE_LISTENER:', error);
+}
+
+function trackView8614() {
+  let WIDGET_DISPLAYED = false;
+  let WIDGET_IN_VIEWPORT = false;
+
+  function trackWidgetInViewport() {
+    if (!WIDGET_IN_VIEWPORT) {
+      fmdTrackEvent8614('view_widget');
+      WIDGET_IN_VIEWPORT = true;
+      debugLog('WIDGET_IN_VIEWPORT_TRACKED');
+    }
+  }
+
+  function isInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    return ((rect.top > 0 && rect.top < innerHeight) ||
+            (rect.bottom > 0 && rect.bottom < innerHeight)) &&
+        ((rect.left > 0 && rect.left < innerWidth) || (rect.right > 0 && rect.right < innerWidth));
+  }
+
+  function findElement() {
+    const element = document.querySelector('.iframe-frontrow-homepage');
+    if (element) return element;
+
+    return document.querySelector('#iframe-frontrow-brand');
+  }
+
+  function checkVisibility() {
+    const element = findElement();
+    if (element && isInViewport(element)) {
+      trackWidgetInViewport();
+      window.removeEventListener('scroll', checkVisibility);
+      window.removeEventListener('resize', checkVisibility);
+    }
+  }
+
+  window.addEventListener('scroll', checkVisibility);
+  window.addEventListener('resize', checkVisibility);
+  checkVisibility();
+}
+
+trackView8614();
+
