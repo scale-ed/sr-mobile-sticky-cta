@@ -442,3 +442,14 @@ body {
     max-width: 100%;
   }
 }
+
+/* Mobile-only experience: matches the live theme's own mobile/desktop
+   split (.desktop-hide, brilliant-page.css) so this stays consistent
+   with the sticky CTA it's replacing. Stakeholders testing via a
+   browser's device toolbar will see it correctly since that just
+   changes the viewport width this media query reads. */
+@media screen and (min-width: 769px) {
+  .sr-modal {
+    display: none;
+  }
+}
