@@ -375,34 +375,30 @@ body {
   --sr-eyebrow-color: #ffffff;
   --sr-name-color: #ffffff;
   --sr-cta-bg: #eb5757;
+  /* Gradient goes on the whole modal (like Option 7), not just the header —
+     painting it on the header alone computed the conic-gradient's angle
+     against that short ~50px box instead of Figma's full ~247px-tall frame,
+     which put the gradient's vertex in the wrong place regardless of
+     collapsed/expanded state.
+     This is Figma's own exported SVG (a conic-gradient warped by a rotation/
+     skew matrix inside a foreignObject), copied verbatim, rather than the
+     plain CSS conic-gradient used elsewhere — a plain conic-gradient can't
+     reproduce that skew, so it rendered a visibly different color
+     arrangement (teal/green/orange) than Figma's actual orange-to-pink
+     vertex. background-size is frozen to the modal's natural height for the
+     same reason as Option 7: so collapsing doesn't rescale it. */
+  border-top-left-radius: var(--sr-radius, 20px);
+  border-top-right-radius: var(--sr-radius, 20px);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 247' preserveAspectRatio='none'><g transform='matrix(-11.668 -17.543 27.7 -7.3899 195 123.5)'><foreignObject x='-161.45' y='-161.45' width='322.9' height='322.9'><div xmlns='http://www.w3.org/1999/xhtml' style='background-image: conic-gradient(from 90deg, rgb(255, 127, 6) -3.6303%, rgb(255, 107, 27) 0.8908%, rgb(255, 86, 48) 5.4119%, rgb(255, 66, 69) 9.933%, rgb(255, 45, 90) 14.454%, rgb(237, 38, 123) 19.838%, rgb(218, 31, 155) 25.223%, rgb(181, 17, 220) 35.991%, rgb(159, 39, 223) 38.671%, rgb(138, 61, 227) 41.351%, rgb(95, 106, 233) 46.711%, rgb(51, 150, 240) 52.07%, rgb(30, 172, 243) 54.75%, rgb(8, 194, 246) 57.43%, rgb(24, 201, 231) 62.631%, rgb(39, 209, 216) 67.831%, rgb(70, 223, 186) 78.232%, rgb(116, 199, 141) 82.766%, rgb(163, 175, 96) 87.301%, rgb(209, 151, 51) 91.835%, rgb(232, 139, 29) 94.102%, rgb(255, 127, 6) 96.37%, rgb(255, 107, 27) 100.89%, rgb(255, 86, 48) 105.41%, rgb(255, 66, 69) 109.93%, rgb(255, 45, 90) 114.45%); opacity:1; height: 100%; width: 100%;'></div></foreignObject></g></svg>");
+  background-size: 100% var(--sr-modal-full-height, 220px);
+  background-position: top;
+  background-repeat: no-repeat;
 }
 
 .sr-modal--gradient-navy .sr-modal__header {
-  background: conic-gradient(
-    from 90deg,
-    rgb(255, 127, 6) -3.6303%,
-    rgb(255, 107, 27) 0.8908%,
-    rgb(255, 86, 48) 5.4119%,
-    rgb(255, 66, 69) 9.933%,
-    rgb(255, 45, 90) 14.454%,
-    rgb(237, 38, 123) 19.838%,
-    rgb(218, 31, 155) 25.223%,
-    rgb(181, 17, 220) 35.991%,
-    rgb(159, 39, 223) 38.671%,
-    rgb(138, 61, 227) 41.351%,
-    rgb(95, 106, 233) 46.711%,
-    rgb(51, 150, 240) 52.07%,
-    rgb(30, 172, 243) 54.75%,
-    rgb(8, 194, 246) 57.43%,
-    rgb(24, 201, 231) 62.631%,
-    rgb(39, 209, 216) 67.831%,
-    rgb(70, 223, 186) 78.232%,
-    rgb(116, 199, 141) 82.766%,
-    rgb(163, 175, 96) 87.301%,
-    rgb(209, 151, 51) 91.835%,
-    rgb(232, 139, 29) 94.102%,
-    rgb(255, 127, 6) 96.37%
-  );
+  background: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 /* ---- Option 7: framed layout (like Spectrum) with the same gradient
