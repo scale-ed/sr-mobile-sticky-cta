@@ -19,8 +19,12 @@ body {
   bottom: 0;
   width: 100%;
   max-width: 430px;
-  transform: translate(-50%, 100%) translateZ(0);
-  -webkit-transform: translate(-50%, 100%) translateZ(0);
+  /* --sr-viewport-shift (set by sr-modal.js via window.visualViewport)
+     compensates for mobile browsers whose auto-hiding address bar leaves
+     a gap under fixed-bottom elements — see sr-modal.js for the full
+     explanation. It's 0px in browsers that don't need it. */
+  transform: translate(-50%, 100%) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
+  -webkit-transform: translate(-50%, 100%) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   z-index: 999999;
   font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -38,8 +42,8 @@ body {
 }
 
 .sr-modal.is-revealed {
-  transform: translate(-50%, 0) translateZ(0);
-  -webkit-transform: translate(-50%, 0) translateZ(0);
+  transform: translate(-50%, 0) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
+  -webkit-transform: translate(-50%, 0) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
 }
 

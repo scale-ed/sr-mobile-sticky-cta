@@ -100,6 +100,32 @@
       window.requestAnimationFrame(evaluateState);
     }
 
+    // Some mobile browsers with an auto-hiding address bar (notably Firefox
+    // Android) don't reposition position:fixed elements when that toolbar
+    // shows/hides, leaving a gap between the modal and the true bottom of
+    // the screen once the toolbar collapses (Chrome/Safari re-anchor fixed
+    // elements correctly on their own). window.visualViewport tracks the
+    // actually-visible area regardless of toolbar state, so we measure the
+    // drift between it and the layout viewport (window.innerHeight, which
+    // is what position:fixed is anchored against) and nudge the modal down
+    // by that amount to compensate.
+    function syncViewportOffset() {
+      if (!window.visualViewport) return;
+      var vv = window.visualViewport;
+      var shift = vv.offsetTop + vv.height - window.innerHeight;
+      modal.style.setProperty("--sr-viewport-shift", shift + "px");
+    }
+
+    function onViewportChange() {
+      window.requestAnimationFrame(syncViewportOffset);
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", onViewportChange);
+      window.visualViewport.addEventListener("scroll", onViewportChange);
+      syncViewportOffset();
+    }
+
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
     // Extra safety net for iOS/mobile Safari, where "scroll" can lag behind
