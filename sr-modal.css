@@ -1,7 +1,7 @@
 /* ==========================================================================
    SR Mobile Scroll Trigger Modal — shared styles for all 5 test variants
    Source: Figma "Componants" page, "Scroll Trigger Overlay" component,
-   Style variants: Red & deep purple / Blue Rounded / Spectrum / Teal / Green
+   Style variants: Red & deep purple / Blue / Spectrum / Teal / Green
    ========================================================================== */
 
 /* The saved page's mobile mega-menu (hidden off-canvas via a translateX on
@@ -98,7 +98,7 @@ body {
   padding-bottom: 0;
 }
 
-/* ---- "framed" treatment: Blue Rounded / Spectrum / Teal / Green ----
+/* ---- "framed" treatment: Blue / Spectrum / Teal / Green ----
    Per Figma, these four float a white (or gradient-backed) inner panel
    inset from the colored/gradient background, which fills the whole
    modal shape rather than just the header band. Red & Deep Purple is
