@@ -39,6 +39,15 @@
     var hasFirstEntered = false;
     var suppressAutoExpand = false;
 
+    // Framed gradient variants (Spectrum / Option 7) paint the conic-gradient
+    // across the whole modal box, whose height shrinks when collapsed. Left
+    // alone, the gradient (which auto-sizes to 100% of its box) rescales and
+    // re-centers as that box shrinks, reading as the container shrinking
+    // rather than a full-size card sliding down. Freezing background-size to
+    // the modal's natural (expanded) height keeps the gradient's scale fixed,
+    // so collapsing just clips away the lower portion instead of rescaling.
+    modal.style.setProperty("--sr-modal-full-height", modal.getBoundingClientRect().height + "px");
+
     function isProduct1CtaAboveCenter() {
       if (!product1Cta) return false;
       var rect = product1Cta.getBoundingClientRect();
