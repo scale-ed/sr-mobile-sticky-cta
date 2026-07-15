@@ -1,20 +1,18 @@
 /* ==========================================================================
    SR Mobile Scroll Trigger Modal — shared behavior for all 5 test variants
-   Behavior spec (per Ed, updated Jul 13):
-     - Modal does not appear at all until the reader first scrolls down far
-       enough that the #1 Product's "Check LiverMD® Stock!" CTA
-       (#sr-product1-cta) crosses above the vertical center of the
-       viewport.
-     - After that first reveal, the modal is permanently "revealed" (never
-       fully hides again) and toggles between two states:
-         - EXPANDED  — whenever the CTA is above the viewport's vertical
-                       center (scrolled down past the #1 listing), OR the
-                       #1 Product's title block (#sr-product1-title) has
-                       scrolled down below the collapsed modal's top edge
-                       (scrolled up past the #1 listing entirely).
+   Behavior spec (per Ed, updated Jul 15):
+     - Modal is visible in its COLLAPSED state as soon as the page loads —
+       it is never fully hidden. The top edge/header of the modal remains
+       visible in this state (per Figma).
+     - It toggles between two states as the reader scrolls:
+         - EXPANDED  — whenever the #1 Product's "Check LiverMD® Stock!"
+                       CTA (#sr-product1-cta) is above the viewport's
+                       vertical center (scrolled down past the #1 listing),
+                       OR the #1 Product's title block (#sr-product1-title)
+                       has scrolled down below the collapsed modal's top
+                       edge (scrolled up past the #1 listing entirely).
          - COLLAPSED — otherwise, i.e. while the reader is still on the #1
-                       listing. The top edge/header of the modal remains
-                       visible in this state (per Figma).
+                       listing (including on initial load).
      - Tapping the header still manually toggles collapsed/expanded. If a
        manual tap collapses it while it would otherwise be auto-expanded,
        that collapse sticks through continued scrolling in that direction
@@ -36,8 +34,14 @@
     var header = document.getElementById("sr-modal-header");
     var ctaButtons = modal.querySelectorAll("[data-sr-action]");
 
-    var hasFirstEntered = false;
     var suppressAutoExpand = false;
+    // The "scrolled up past #1 entirely" check below is only meaningful
+    // once the reader has actually reached the #1 listing at least once —
+    // geometrically, "haven't scrolled down to product 1 yet" and
+    // "scrolled back up past product 1" look identical (the title sits
+    // below the header line in both cases), so without this gate the
+    // modal would render EXPANDED on first page load instead of COLLAPSED.
+    var hasReachedProduct1 = false;
 
     // Framed gradient variants (Spectrum / Option 7) paint the conic-gradient
     // across the whole modal box, whose height shrinks when collapsed. Left
@@ -68,18 +72,15 @@
     function evaluateState() {
       if (!sentinel) return;
 
-      if (!hasFirstEntered && isProduct1CtaAboveCenter()) {
-        hasFirstEntered = true;
-      }
-
-      if (!hasFirstEntered) {
-        modal.classList.remove("is-revealed");
-        return;
-      }
-
       modal.classList.add("is-revealed");
 
-      var shouldExpand = isProduct1CtaAboveCenter() || isProduct1TitleBelowCollapsedModal();
+      if (!hasReachedProduct1 && isProduct1CtaAboveCenter()) {
+        hasReachedProduct1 = true;
+      }
+
+      var shouldExpand =
+        isProduct1CtaAboveCenter() ||
+        (hasReachedProduct1 && isProduct1TitleBelowCollapsedModal());
       var shouldCollapse = !shouldExpand;
 
       if (suppressAutoExpand) {

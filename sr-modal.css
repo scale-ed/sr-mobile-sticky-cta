@@ -453,6 +453,19 @@ body {
   }
 }
 
+/* The theme's own mobile reading-progress badge (brilliant-page.css
+   .progress-container) is fixed to the same bottom-right corner the modal
+   now occupies, so the two stack on top of each other. Reposition it to
+   the top-right, below the sticky header, instead of editing the vendor
+   CSS directly. "body" bumps specificity above the vendor rule so this
+   wins regardless of stylesheet load order. */
+@media screen and (max-width: 768px) {
+  body .progress-container {
+    top: 72px;
+    bottom: auto;
+  }
+}
+
 /* Mobile-only experience: matches the live theme's own mobile/desktop
    split (.desktop-hide, brilliant-page.css) so this stays consistent
    with the sticky CTA it's replacing. Stakeholders testing via a
