@@ -109,7 +109,11 @@
     // actually-visible area regardless of toolbar state, so we measure the
     // drift between it and the layout viewport (window.innerHeight, which
     // is what position:fixed is anchored against) and nudge the modal down
-    // by that amount to compensate.
+    // by that amount to compensate. This writes to --sr-viewport-shift,
+    // which sr-modal.css applies via `bottom` rather than `transform` — see
+    // the comment on .sr-modal for why (transform is eased for the reveal/
+    // collapse animation, which would lag this correction behind a fast
+    // toolbar animation and briefly reveal a gap).
     function syncViewportOffset() {
       if (!window.visualViewport) return;
       var vv = window.visualViewport;

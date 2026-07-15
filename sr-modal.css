@@ -16,15 +16,22 @@ body {
 .sr-modal {
   position: fixed;
   left: 50%;
-  bottom: 0;
-  width: 100%;
-  max-width: 430px;
   /* --sr-viewport-shift (set by sr-modal.js via window.visualViewport)
      compensates for mobile browsers whose auto-hiding address bar leaves
      a gap under fixed-bottom elements — see sr-modal.js for the full
-     explanation. It's 0px in browsers that don't need it. */
-  transform: translate(-50%, 100%) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
-  -webkit-transform: translate(-50%, 100%) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
+     explanation. It's 0px in browsers that don't need it. This lives on
+     `bottom` rather than in `transform` deliberately: `transform` is the
+     property this rule eases via the transition below (for the reveal/
+     collapse animation), and during a fast inertial scroll the toolbar
+     resizes faster than that 0.35s ease can track, so a shift baked into
+     `transform` visibly lags behind it, opening a gap under the modal
+     until the fling settles and the eased value catches up. `bottom`
+     isn't transitioned, so it tracks the toolbar instantly instead. */
+  bottom: calc(-1 * var(--sr-viewport-shift, 0px));
+  width: 100%;
+  max-width: 430px;
+  transform: translate(-50%, 100%) translateZ(0);
+  -webkit-transform: translate(-50%, 100%) translateZ(0);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   z-index: 999999;
   font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -42,8 +49,8 @@ body {
 }
 
 .sr-modal.is-revealed {
-  transform: translate(-50%, 0) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
-  -webkit-transform: translate(-50%, 0) translateY(var(--sr-viewport-shift, 0px)) translateZ(0);
+  transform: translate(-50%, 0) translateZ(0);
+  -webkit-transform: translate(-50%, 0) translateZ(0);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
 }
 
